@@ -1,0 +1,16 @@
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./services/api-gateway/Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      EMAIL_SERVICE_URL: http://email:8081
+
+  email:
+    build:
+      context: .
+      dockerfile: ./services/email/Dockerfile
+    ports:
+      - 8081:8081
