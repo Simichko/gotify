@@ -1,6 +1,6 @@
-# gotify
+![Logo](./docs/app_logo.svg)
 
-![Logo](./docs/app_logo.png)
+# Обзор
 
 Шаблон демонстрационного веб-приложения на микросервисной архитектуре на Go
 для отправки уведомлений через различные каналы: Email, SMS, Telegram и др.
@@ -19,7 +19,7 @@
 
 ## Архитектура
 
-![App architecture](./docs/notification_app.png)
+<img src="./docs/notification_app.png" width="550"/>
 
 - API gateway (notifications) - сервис публикации запросов в очередь
 - DB - сервис для хранения уведомлений в БД
