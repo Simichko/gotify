@@ -19,8 +19,6 @@ services:
     build:
       context: .
       dockerfile: ./services/email/Dockerfile
-    ports:
-      - 8081:8081
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -28,6 +26,20 @@ services:
       watch:
         - action: rebuild
           path: services/email
+    deploy:
+      mode: replicated
+      replicas: 3
+
+  tg:
+    build:
+      context: .
+      dockerfile: ./services/tg/Dockerfile
+    ports:
+      - 8082:8082
+    develop:
+      watch:
+        - action: rebuild
+          path: services/tg
 
   rabbitmq:
     image: rabbitmq:management-alpine

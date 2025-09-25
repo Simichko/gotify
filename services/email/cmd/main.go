@@ -5,6 +5,7 @@ import (
 	"gotify/shared/app"
 	"log"
 	"net/http"
+	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -37,9 +38,20 @@ func main() {
 	failOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
-	q, err := ch.QueueDeclare(
+	err = ch.ExchangeDeclare(
 		"email",
+		"fanout",
+		true,
 		false,
+		false,
+		false,
+		nil,
+	)
+	failOnError(err, "Failed to declare an exchange")
+
+	q, err := ch.QueueDeclare(
+		"emails",
+		true,
 		false,
 		false,
 		false,
@@ -47,10 +59,22 @@ func main() {
 	)
 	failOnError(err, "Failed to declare a queue")
 
+	err = ch.Qos(1, 0, false)
+	failOnError(err, "Failed to set QoS")
+
+	err = ch.QueueBind(
+		q.Name,
+		"",
+		"email",
+		false,
+		nil,
+	)
+	failOnError(err, "Failed to bind with exchange")
+
 	msgs, err := ch.Consume(
 		q.Name,
-		"email-consumer",
-		true,
+		"",
+		false,
 		false,
 		false,
 		false,
@@ -61,6 +85,9 @@ func main() {
 	go func() {
 		for msg := range msgs {
 			log.Printf("Received a message: %s", msg.Body)
+			time.Sleep(3 * time.Second)
+			log.Printf("Message sent")
+			msg.Ack(false)
 		}
 	}()
 

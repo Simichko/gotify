@@ -15,13 +15,11 @@ type emailService struct {
 	log        *log.Logger
 	connection *amqp.Connection
 	channel    *amqp.Channel
-	queue      amqp.Queue
 	config     config.Config
 	url        string
 }
 
 func New(l *log.Logger) *emailService {
-	// defaultUrl := "amqp://guest:guest@rabbitmq:5672/"
 	config := config.New()
 
 	return &emailService{
@@ -45,13 +43,14 @@ func (s *emailService) SendNotification(ctx Context, body any) {
 
 	err = s.channel.PublishWithContext(
 		ctx,
+		"email",
 		"",
-		s.queue.Name,
 		false,
 		false,
 		amqp.Publishing{
-			ContentType: "application/json",
-			Body:        bytes,
+			DeliveryMode: amqp.Persistent,
+			ContentType:  "application/json",
+			Body:         bytes,
 		},
 	)
 
@@ -75,40 +74,31 @@ func (s *emailService) Close() {
 
 func (s *emailService) connect() error {
 	conn, err := amqp.Dial(s.url)
-	// failOnError(err, "Failed to connect to RabbitMQ")
 	if err != nil {
 		return err
 	}
 
 	ch, err := conn.Channel()
-	// failOnError(err, "Failed to open channel")
 	if err != nil {
 		return err
 	}
 
-	q, err := ch.QueueDeclare(
+	err = ch.ExchangeDeclare(
 		"email",
-		false,
+		"fanout",
+		true,
 		false,
 		false,
 		false,
 		nil,
 	)
+
 	if err != nil {
 		return err
 	}
 
 	s.connection = conn
 	s.channel = ch
-	s.queue = q
-
-	// failOnError(err, "Failed to declare a queue")
 
 	return nil
-}
-
-func failOnError(err error, msg string) {
-	if err != nil {
-		log.Panicf("%s: %s", msg, err)
-	}
 }

@@ -28,9 +28,13 @@
 ## Roadmap
 
 - [x] API gateway
-- [x] Добавить Dockerfile
-- [x] Добавить docker-compose
-- [x] Добавить rabbitmq для email
+- [x] Dockerfile
+- [x] Docker Compose
+- [x] RabbitMQ для email
+- [ ] Kafka
+- [ ] PostgreSQL
+- [ ] Redis
+- [ ] Grafana/Loki
+- [ ] Grafana/Prometheus
+- [ ] Kubernetes
 - [ ] Чтение конфига из ~/.config/
-- [ ] Добавить Kafka
-- [ ] Добавить kubernetes
