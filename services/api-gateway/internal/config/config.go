@@ -10,10 +10,12 @@ type Config struct {
 	EmailServiceUrl string
 }
 
-func New() *Config {
-	return &Config{
+const emailUrlDefault = "amqp://guest:guest@rabbitmq:5672/"
+
+func New() Config {
+	return Config{
 		Port:            getEnvAsInt("PORT", 8080),
-		EmailServiceUrl: getEnv("EMAIL_SERVICE_URL", "http://localhost:8081"),
+		EmailServiceUrl: getEnv("EMAIL_SERVICE_URL", emailUrlDefault),
 	}
 }
 

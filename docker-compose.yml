@@ -6,7 +6,14 @@ services:
     ports:
       - 8080:8080
     environment:
-      EMAIL_SERVICE_URL: http://email:8081
+      EMAIL_SERVICE_URL: amqp://rmuser:rmpassword@rabbitmq:5672/
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: rebuild
+          path: services/api-gateway
 
   email:
     build:
@@ -14,3 +21,25 @@ services:
       dockerfile: ./services/email/Dockerfile
     ports:
       - 8081:8081
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: rebuild
+          path: services/email
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=rmuser
+      - RABBITMQ_DEFAULT_PASS=rmpassword
+    ports:
+      - 15672:15672
+      - 5672:5672
+
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 5s
+      timeout: 20s
+      retries: 5

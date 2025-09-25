@@ -30,6 +30,7 @@
 - [x] API gateway
 - [x] Добавить Dockerfile
 - [x] Добавить docker-compose
+- [x] Добавить rabbitmq для email
 - [ ] Чтение конфига из ~/.config/
 - [ ] Добавить Kafka
 - [ ] Добавить kubernetes
